@@ -1,0 +1,2 @@
+class SudokuTask < ApplicationRecord
+end

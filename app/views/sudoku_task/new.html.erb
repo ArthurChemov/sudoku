@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+
+<body style="margin-top: 10px; margin-left: 10px">
+<h1>Sudoku</h1>
+<%= form_with model: @sudoku_task, url: sudoku_task_index_path, method: :post do |f| %>
+  <table>
+    <% (0..8).each do |i| %>
+      <tr>
+        <% (0..8).each do |j| %>
+          <td>
+            <%= f.number_field "cell_#{i}_#{j}", min: 0, max: 9, step: 1, class: 'cell' %>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+
+  <%= f.submit 'Submit' %>
+<% end %>
+</body>
+</html>
