@@ -138,4 +138,80 @@ class SudokuTaskController < ApplicationController
       :cell_8_0, :cell_8_1, :cell_8_2, :cell_8_3, :cell_8_4, :cell_8_5, :cell_8_6, :cell_8_7, :cell_8_8
     ).merge(created_at: Time.now, updated_at: Time.now)
   end
+
+  def generate_sudoku
+    # Create an empty 9x9 matrix for the sudoku
+    sudoku = Array.new(9) { Array.new(9, 0) }
+
+    # Fill the first 3x3 squares of the sudoku with random numbers from 1 to 9
+    for i in 0..2
+      for j in 0..2
+        num = rand(1..9)
+        while !is_valid(sudoku, i, j, num)
+          num = rand(1..9)
+        end
+        sudoku[i][j] = num
+      end
+    end
+
+    # Fill the rest of the sudoku using the recursive function solve_sudoku()
+    solve_sudoku(sudoku, 0, 3)
+
+    return sudoku
+  end
+
+  def is_valid(sudoku, row, col, num)
+    # Check if the number is already in the row
+    return false if sudoku[row].include?(num)
+
+    # Check if the number is already in the column
+    return false if sudoku.transpose[col].include?(num)
+
+    # Check if the number is already in the 3x3 square
+    row_start = (row / 3) * 3
+    col_start = (col / 3) * 3
+    for i in row_start..(row_start + 2)
+      for j in col_start..(col_start + 2)
+        return false if sudoku[i][j] == num
+      end
+    end
+
+    # If the number is not found in the row, column or square, it is valid
+    return true
+  end
+
+  def solve_sudoku(sudoku, row, col)
+    # If we have reached the last column of the last row, the sudoku is solved
+    return true if row == 9
+
+    # If the current cell is not empty, move to the next cell
+    if sudoku[row][col] != 0
+      if col == 8
+        return solve_sudoku(sudoku, row + 1, 0)
+      else
+        return solve_sudoku(sudoku, row, col + 1)
+      end
+    end
+
+    # Try placing each number from 1 to 9 in the current cell
+    for num in 1..9
+      if is_valid(sudoku, row, col, num)
+        sudoku[row][col] = num
+
+        # Move to the next cell
+        if col == 8
+          return true if solve_sudoku(sudoku, row + 1, 0)
+        else
+          return true if solve_sudoku(sudoku, row, col + 1)
+        end
+
+        # If we reach here, it means the current number didn't work. So we reset the cell and try the next number.
+        sudoku[row][col] = 0
+      end
+    end
+
+    # If we reach here, it means no number worked for this cell. So we return false to trigger backtracking.
+    return false
+  end
+
 end
