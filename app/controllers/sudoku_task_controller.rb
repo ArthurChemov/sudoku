@@ -101,7 +101,7 @@ class SudokuTaskController < ApplicationController
     solver = SudokuSolver.new
     (0..8).each do |i|
       (0..8).each do |j|
-        solver[j, i] = sudoku_task.("cell_#{i}_#{j}")
+        solver[j, i] = sudoku_task.public_send("cell_#{i}_#{j}")
       end
     end
     puts solver.to_s
