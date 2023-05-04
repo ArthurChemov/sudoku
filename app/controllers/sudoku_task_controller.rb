@@ -44,7 +44,7 @@ class SudokuTaskController < ApplicationController
         end
       end
       puts "Here's the Board array:" # тест
-      puts @board.inspect       # знову тест
+      puts @sudoku_task.inspect       # знову тест
     end
 
     def [](x, y)
