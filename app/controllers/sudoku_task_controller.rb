@@ -1,10 +1,14 @@
 class SudokuTaskController < ApplicationController
+  attr_reader :sudoku_array
   def index
     @sudoku_task
   end
 
   def new
     @sudoku_task = SudokuTask.new
+    @sudoku_array = generate_sudoku  # має згенерувати готовий судоку
+    puts "Here's the Sudoku array:" # це для тестування
+    puts @sudoku_array.inspect       # і це
   end
 
   def create
@@ -29,6 +33,18 @@ class SudokuTaskController < ApplicationController
 
     def initialize
       @board = Array.new(SIZE) { Array.new(SIZE, nil) }
+      rand_count = 0  # зміна для підрахунку, скільки чисел вже внесено до порожньої судоку
+      max_on_board = 30 # буде внесено не більше цієї кількості разів
+      for i in 0..8 do
+        for j in 0..8 do
+          if rand_count <= max_on_board and rand(0..1) == 1   # якщо ще дозволено вносити числа на початку та рандом
+          @sudoku_task[i][j] = @sudoku_array[i][j]  # отут треба щоб воно брало відвовідне число із вже заповненого судоку
+          rand_count += 1
+          end
+        end
+      end
+      puts "Here's the Board array:" # тест
+      puts @board.inspect       # знову тест
     end
 
     def [](x, y)
