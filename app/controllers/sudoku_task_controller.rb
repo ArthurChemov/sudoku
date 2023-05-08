@@ -1,5 +1,4 @@
 class SudokuTaskController < ApplicationController
-  attr_reader :sudoku_array
   def index
     @sudoku_task
   end
@@ -7,16 +6,77 @@ class SudokuTaskController < ApplicationController
   def new
     @sudoku_task = SudokuTask.new
     @sudoku_array = generate_sudoku  # має згенерувати готовий судоку
+    @array = @sudoku_array
+    session[:array] = @array  # сохраняем значение в сессии
     puts "Here's the Sudoku array:" # це для тестування
     puts @sudoku_array.inspect       # і це
+
+    @sudoku_task.cell_0_4 = @sudoku_array[0][4]
+    @sudoku_task.cell_0_8 = @sudoku_array[0][8]
+
+    @sudoku_task.cell_1_1 = @sudoku_array[1][1]
+    @sudoku_task.cell_1_2 = @sudoku_array[1][2]
+    @sudoku_task.cell_1_3 = @sudoku_array[1][3]
+
+    @sudoku_task.cell_2_1 = @sudoku_array[2][1]
+    @sudoku_task.cell_2_2 = @sudoku_array[2][2]
+    @sudoku_task.cell_2_6 = @sudoku_array[2][6]
+    @sudoku_task.cell_2_8 = @sudoku_array[2][8]
+
+    @sudoku_task.cell_3_0 = @sudoku_array[3][0]
+    @sudoku_task.cell_3_2 = @sudoku_array[3][2]
+    @sudoku_task.cell_3_3 = @sudoku_array[3][3]
+    @sudoku_task.cell_3_5 = @sudoku_array[3][5]
+    @sudoku_task.cell_3_6 = @sudoku_array[3][6]
+    @sudoku_task.cell_3_8 = @sudoku_array[3][8]
+
+    @sudoku_task.cell_4_0 = @sudoku_array[4][0]
+    @sudoku_task.cell_4_1 = @sudoku_array[4][1]
+    @sudoku_task.cell_4_2 = @sudoku_array[4][2]
+    @sudoku_task.cell_4_3 = @sudoku_array[4][3]
+
+    @sudoku_task.cell_5_1 = @sudoku_array[5][1]
+    @sudoku_task.cell_5_2 = @sudoku_array[5][2]
+    @sudoku_task.cell_5_3 = @sudoku_array[5][3]
+
+    @sudoku_task.cell_6_1 = @sudoku_array[6][1]
+    @sudoku_task.cell_6_2 = @sudoku_array[6][2]
+    @sudoku_task.cell_6_6 = @sudoku_array[6][6]
+    @sudoku_task.cell_6_8 = @sudoku_array[6][8]
+
+    @sudoku_task.cell_7_0 = @sudoku_array[7][0]
+    @sudoku_task.cell_7_2 = @sudoku_array[7][2]
+    @sudoku_task.cell_7_3 = @sudoku_array[7][3]
+    @sudoku_task.cell_7_5 = @sudoku_array[7][5]
+    @sudoku_task.cell_7_6 = @sudoku_array[7][6]
+    @sudoku_task.cell_7_8 = @sudoku_array[7][8]
+
+    @sudoku_task.cell_8_0 = @sudoku_array[8][0]
+    @sudoku_task.cell_8_1 = @sudoku_array[8][1]
+    @sudoku_task.cell_8_2 = @sudoku_array[8][2]
+    @sudoku_task.cell_8_3 = @sudoku_array[8][3]
+
+    puts @sudoku_task.inspect       # і це
   end
 
   def create
     sudoku_task = SudokuTask.new(sudoku_params)
+    @array = session[:array]  # получаем значение из сессии
 
     if sudoku_task.save
-      @solution = solve(sudoku_task)
       puts sudoku_task
+      @result = "U win!"  # Assume the user wins
+      # Check if any cell is different from the solution array
+      (0..8).each do |i|
+        (0..8).each do |j|
+          if sudoku_task.send("cell_#{i}_#{j}") != @array[i][j]
+            @result = "U lose!"
+            break  # Exit the inner loop
+          end
+        end
+        break if @result == "U lose!"  # Exit the outer loop
+      end
+      session[:result] = @result  # сохраняем значение в сессии
       redirect_to result_path
     else
       @sudoku_task = sudoku_task
@@ -25,6 +85,7 @@ class SudokuTaskController < ApplicationController
   end
 
   def result
+    @result = session[:result]  # получаем значение из сессии
   end
 
   class SudokuSolver
@@ -33,18 +94,6 @@ class SudokuTaskController < ApplicationController
 
     def initialize
       @board = Array.new(SIZE) { Array.new(SIZE, nil) }
-      rand_count = 0  # зміна для підрахунку, скільки чисел вже внесено до порожньої судоку
-      max_on_board = 30 # буде внесено не більше цієї кількості разів
-      for i in 0..8 do
-        for j in 0..8 do
-          if rand_count <= max_on_board and rand(0..1) == 1   # якщо ще дозволено вносити числа на початку та рандом
-          @sudoku_task[i][j] = @sudoku_array[i][j]  # отут треба щоб воно брало відвовідне число із вже заповненого судоку
-          rand_count += 1
-          end
-        end
-      end
-      puts "Here's the Board array:" # тест
-      puts @sudoku_task.inspect       # знову тест
     end
 
     def [](x, y)

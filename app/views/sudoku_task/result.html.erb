@@ -7,21 +7,9 @@
 </head>
 
 <body style="margin-top: 10px; margin-left: 10px">
-  <h1>Result</h1>
-    <% @sudoku_task.each if @sudoku_task.present? do |solution| %>
-      <table>
-        <% (0..8).each do |i| %>
-          <tr>
-            <% (0..8).each do |j| %>
-              <td>
-                o
-                <%= solution.("cell_#{i}_#{j}") %>
-              </td>
-            <% end %>
-          </tr>
-        <% end %>
-      </table>
-    <% end %>
+<div>
+  Result: <%= @result %>
+</div>
   <span><%= link_to 'Back', sudoku_task_index_path, class: 'btn btn-primary' %></span>
 </body>
 </html>
